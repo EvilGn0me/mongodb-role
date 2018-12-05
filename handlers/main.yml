@@ -1,0 +1,17 @@
+---
+- name: restart mongodb
+  systemd:
+    name: '{{ item }}'
+    state: restarted
+    enabled: yes
+    daemon_reload: True
+  with_items:
+    - '{{ mongodb.services }}'
+
+- name: restart zabbix-agent
+  service:
+    name: '{{ item }}'
+    state: restarted
+    enabled: yes
+  with_items:
+    - zabbix-agent

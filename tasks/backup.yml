@@ -1,0 +1,29 @@
+- name: create dirs
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: root
+    group: root
+  with_items:
+    - '{{ mongodb_conf.backup_dir }}'
+
+- name: manage backup.sh
+  template:
+    src: templates/backup.sh
+    dest: /usr/local/bin/mongodb_backup.sh
+    owner: root
+    group: root
+    mode: 0755
+
+- cron:
+    name: 'mongodb backup'
+    minute: '0'
+    hour: '0'
+    user: root
+    job: '/bin/bash /usr/local/bin/mongodb_backup.sh'
+
+- name: adding backup server to authorized keys
+  authorized_key:
+    user: 'root'
+    state: present
+    key: '{{ backup_key }}'

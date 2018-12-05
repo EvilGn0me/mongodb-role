@@ -1,0 +1,22 @@
+---
+mongodb:
+  repos:
+    mongodb:
+      name: 'mongodb'
+      baseurl: 'http://repo.percona.com/release/$releasever/RPMS/$basearch'
+  packages:
+    - Percona-Server-MongoDB-36
+    - Percona-Server-MongoDB-36-server
+    - Percona-Server-MongoDB-36-mongos
+    - Percona-Server-MongoDB-36-shell
+    - Percona-Server-MongoDB-36-tools
+  old_packages:
+    - Percona-Server-MongoDB-34
+    - Percona-Server-MongoDB-34-server
+    - Percona-Server-MongoDB-34-mongos
+    - Percona-Server-MongoDB-34-shell
+    - Percona-Server-MongoDB-34-tools
+  services:
+    - mongod
+  zbx:
+    template_name: 'Template App MongoDB'

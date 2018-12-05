@@ -1,0 +1,49 @@
+- name: manage mongodb.sh
+  template:
+    src: 'templates/mongodb.sh'
+    dest: '/opt/zabbix_scripts/mongodb.sh'
+    owner: root
+    group: root
+    mode: 0755
+  notify: 'restart zabbix-agent'
+
+- name: manage mongodb-repl.sh
+  template:
+    src: 'templates/mongo-repl.sh'
+    dest: '/opt/zabbix_scripts/mongo-repl.sh'
+    owner: root
+    group: root
+    mode: 0755
+  notify: 'restart zabbix-agent'
+
+- name: manage zabbix mongodb userparameter
+  template:
+    src: 'templates/userparameter_mongodb.conf'
+    dest: '{{ zabbix_dir }}/userparameter_mongodb.conf'
+    owner: root
+    group: root
+    mode: 0644
+  notify: 'restart zabbix-agent'
+
+- name: Import Zabbix json template configuration
+  local_action:
+    module: zabbix_template
+    server_url: '{{ zabbix_url }}'
+    login_user: '{{ zabbix_user}}'
+    login_password: '{{ zabbix_pass }}'
+    template_name: '{{ mongodb.zbx.template_name }}'
+    template_json: '{{ lookup("file", "templates/zabbix_mongodb.json") }}'
+    template_groups:
+      - Templates
+    state: present
+
+- name: Link host to template
+  local_action:
+    module: zabbix_host
+    server_url: '{{ zabbix_url }}'
+    login_user: '{{ zabbix_user}}'
+    login_password: '{{ zabbix_pass }}'
+    host_name: '{{ ansible_fqdn }}'
+    force: no
+    link_templates:
+      - '{{ mongodb.zbx.template_name }}'

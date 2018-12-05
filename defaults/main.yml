@@ -1,0 +1,9 @@
+---
+# defaults file for mongodb-role
+mongodb_conf:
+  user: 'administrator'
+  password: 'change_me'
+  host: '127.0.0.1'
+  cache_size: '18'
+  port: '27017'
+  backup_dir: /srv/backup/mongodb

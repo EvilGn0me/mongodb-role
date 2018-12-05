@@ -1,0 +1,57 @@
+---
+# tasks file for mongodb-role
+
+- name: Load a variable file based on the OS type.
+  include_vars: '{{ item }}'
+  with_first_found:
+    - '{{ ansible_distribution|lower }}.yml'
+    - '{{ ansible_os_family|lower }}.yml'
+
+- name: pre-requisites tasks
+  import_tasks: redhat.yml
+  when: ansible_os_family|lower == 'redhat'
+
+- name: zabbix agent tasks
+  import_tasks: zabbix.yml
+  when: zabbix_url is defined
+
+- name: install pymongo
+  pip:
+    name: pymongo
+    state: latest
+
+- name: ensure services running
+  systemd:
+    name: '{{ item }}'
+    state: started
+    enabled: yes
+    daemon_reload: True
+  with_items:
+    - '{{ mongodb.services }}'
+
+- mongodb_user:
+    database: admin
+    name: '{{ mongodb_conf.user}}'
+    password: '{{ mongodb_conf.password }}'
+    roles: root
+    state: present
+  ignore_errors: yes
+
+- name: manage mongod.conf
+  template:
+    src: templates/mongod.conf
+    dest: /etc/mongod.conf
+    owner: root
+    group: root
+  notify: 'restart mongodb'
+
+- name: backup tasks
+  import_tasks: backup.yml
+  when: backup_key is defined
+
+- name: backup task remove
+  cron:
+    name: 'mongodb backup'
+    state: absent
+  when: backup_key is not defined
+

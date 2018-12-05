@@ -1,0 +1,23 @@
+- name: remove old packages
+  yum:
+    name: '{{ item }}'
+    state: absent
+  with_items:
+    - '{{ mongodb.old_packages }}'
+  tags:
+    - remove_old
+
+- name: add repositories
+  yum_repository:
+    name: '{{ item.value.name }}'
+    baseurl: '{{ item.value.baseurl }}'
+    description: Repo managed by Ansible
+    gpgcheck: no
+  with_dict: '{{ mongodb.repos }}'
+
+- name: install packages
+  yum:
+    name: '{{ item }}'
+    state: latest
+  with_items:
+    - '{{ mongodb.packages }}'
