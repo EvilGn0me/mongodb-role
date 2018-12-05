@@ -1,7 +1,6 @@
 galaxy_info:
   author: Igor Loginov
   description: mongodb server installation
-  company: Faunus
 
   # If the issue tracker for your role is not on github, uncomment the
   # next line and provide a value
